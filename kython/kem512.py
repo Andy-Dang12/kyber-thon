@@ -1,6 +1,6 @@
 import posixpath as P
 from typing import Union, Tuple
-from ctypes import POINTER, byref, cast, c_ubyte, c_byte, c_int
+from ctypes import POINTER, byref, cast, c_ubyte, c_byte, c_int, Array
 from ctypes import cdll, create_string_buffer
 
 __lib__    = P.abspath(P.join(__file__, '..', '..', 'ref'))
@@ -53,11 +53,10 @@ def crypto_kem_keypair() -> Tuple:
         return None, None
 
 if __name__ == '__main__':
+    from typing import List
     pk, sk = crypto_kem_keypair()
     print(type(pk))
     print(type(sk))
-    pk = bytes(pk)
-    sk = bytes(sk)
+    pk = cast(pk, POINTER(Array * 800))
     print(pk)
-    print()
     print(sk)
