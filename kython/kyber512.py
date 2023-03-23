@@ -83,7 +83,7 @@ def kyber512_ref_enc(pk_ptr:POINTER(c_ubyte)):
     pqcrystals_kyber512_ref_enc.restype = c_int
     
     ct = create_string_buffer(768)
-    ss = create_string_buffer(32)
+    ss = create_string_buffer(32)   #key_b
     
     # pass pointers to unsigned bytes to the function
     ct_ptr = cast(ct, POINTER(c_ubyte))
@@ -98,12 +98,56 @@ def kyber512_ref_enc(pk_ptr:POINTER(c_ubyte)):
     return ct_list, ss_list, ct, ss, ct_ptr, ss_ptr
 
 
-def kyber512_ref_dec():
-    return 
+def kyber512_ref_dec(ct_ptr:POINTER(c_ubyte), sk_ptr:POINTER(c_ubyte)):
+    """
+    * Name:        crypto_kem_dec
+    *
+    * Description: Generates shared secret for given
+    *              cipher text and private key
+    *
+    * Arguments:   - uint8_t *ss: pointer to output shared secret
+    *                (an already allocated array of KYBER_SSBYTES bytes)
+    *              - const uint8_t *ct: pointer to input cipher text
+    *                (an already allocated array of KYBER_CIPHERTEXTBYTES bytes)
+    *              - const uint8_t *sk: pointer to input private key
+    *                (an already allocated array of KYBER_SECRETKEYBYTES bytes)
+    *
+    * Returns 0.
+    *
+    * On failure, ss will contain a pseudo-random value.
+    *
+    * CRYPTO_PUBLICKEYBYTES  = 800
+    * CRYPTO_SECRETKEYBYTES  = 1632
+    * CRYPTO_CIPHERTEXTBYTES = 768
+    * CRYPTO_BYTES           = 32
+    """
+    pqcrystals_kyber512_ref_dec = kyber512_ref.pqcrystals_kyber512_ref_dec
+    pqcrystals_kyber512_ref_dec.argtypes = [POINTER(c_ubyte), POINTER(c_ubyte), POINTER(c_ubyte)]
+    pqcrystals_kyber512_ref_dec.restype = c_int
+    
+    ss = create_string_buffer(32)   #key_a
+    ss_ptr = cast(ss, POINTER(c_ubyte))
+    res = pqcrystals_kyber512_ref_dec(ss_ptr, ct_ptr, sk_ptr)
+    ss_list = [int.from_bytes(ss[i:i+1], byteorder='little') for i in range(len(ss))]
+    return ss_list, ss, ss_ptr
 
 
-def test_keys():
+def compare_list(first:list, second:list) -> bool:
+    if len(first) != len(second):
+        print(f"key_a = {len(first)} ; key_b = {len(second)}")
+        return False
+    
+    for a, b in zip(first, second):
+        if a != b:
+            return False
+    return True
+
+def test_keys() -> bool:
     pk_list, sk_list, pk, sk, pk_ptr, sk_ptr = kyber512_ref_keypair()
-    ct_list, ss_list, ct, ss, ct_ptr, ss_ptr = kyber512_ref_enc(pk_ptr)
-
-test_keys()
+    ct_list, key_b, ct, ss, ct_ptr, ss_ptr = kyber512_ref_enc(pk_ptr)
+    key_a, ss, ss_ptr = kyber512_ref_dec(ct_ptr, sk_ptr)
+    
+    if compare_list(key_a, key_b):
+        return True
+    else: 
+        return False
