@@ -3,7 +3,6 @@
 #include <string.h>
 #include "kem.h"
 #include "randombytes.h"
-#include <stdlib.h>
 
 #define NTESTS 1
 
@@ -17,17 +16,7 @@ static int test_keys()
 
   //Alice generates a public key
   crypto_kem_keypair(pk, sk);
-{
-    for(int i = 0; i < CRYPTO_PUBLICKEYBYTES; i++)
-      printf("%d ", pk[i]);
-    printf("\n\n\n");
-    for(int i = 0; i < CRYPTO_SECRETKEYBYTES; i++)
-      printf("%d ", sk[i]);
-    printf("\n\n\n");
-    for(int i = 0; i < CRYPTO_CIPHERTEXTBYTES; i++)
-      printf("%d ", ct[i]);
-    exit(0);
-}
+
   //Bob derives a secret key and creates a response
   crypto_kem_enc(ct, key_b, pk);
 
