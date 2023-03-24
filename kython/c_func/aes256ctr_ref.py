@@ -22,24 +22,24 @@ class C_aes256ctr_ctx(Structure):
 
 #* prf
 pqcrystals_kyber_aes256ctr_ref_prf = aes256ctr_ref.pqcrystals_kyber_aes256ctr_ref_prf
+pqcrystals_kyber_aes256ctr_ref_prf.restype  = None
 pqcrystals_kyber_aes256ctr_ref_prf.argtypes = [POINTER(c_uint8), 
                                                c_size_t, 
                                                POINTER(c_uint8) * 32, 
                                                POINTER(c_uint8) * 12]
-pqcrystals_kyber_aes256ctr_ref_prf.restype = None
 
 
 #* init
 pqcrystals_kyber_aes256ctr_ref_init = aes256ctr_ref.pqcrystals_kyber_aes256ctr_ref_init
+pqcrystals_kyber_aes256ctr_ref_init.restype  = None
 pqcrystals_kyber_aes256ctr_ref_init.argtypes = [POINTER(C_aes256ctr_ctx), 
                                                 POINTER(c_uint8) * 32, 
                                                 POINTER(c_uint8) * 12]
-pqcrystals_kyber_aes256ctr_ref_init.restype = None
 
 
 #* squeezeblocks
 pqcrystals_kyber_aes256ctr_ref_squeezeblocks = aes256ctr_ref.pqcrystals_kyber_aes256ctr_ref_squeezeblocks
+pqcrystals_kyber_aes256ctr_ref_squeezeblocks.restype  = None
 pqcrystals_kyber_aes256ctr_ref_squeezeblocks.argtypes = [POINTER(c_uint8), 
                                                          c_size_t, 
                                                          POINTER(C_aes256ctr_ctx)]
-pqcrystals_kyber_aes256ctr_ref_squeezeblocks.restype = None
