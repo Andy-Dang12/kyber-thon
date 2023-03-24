@@ -3,7 +3,11 @@ from ctypes import (
     c_size_t, c_uint8, c_uint32, c_uint64)
 import os.path
 
-
+"""
+* more detail, see 
+* ref/aes256ctr.h
+* ref/aes256ctr.c
+"""
 aes256ctr_ref = cdll.LoadLibrary(os.path.abspath(os.path.join(
     __file__,'..', '..','..', 'ref', 'libpqcrystals_aes256ctr_ref.so')))
 
