@@ -1,5 +1,5 @@
 from ctypes import cdll, cast, create_string_buffer
-from ctypes import c_int, c_ubyte, POINTER
+from ctypes import c_int, c_ubyte, c_uint8, POINTER
 import numpy as np
 
 # load the shared library containing the C function
@@ -26,7 +26,7 @@ def kyber512_ref_keypair() -> tuple[list, list]:
     """
     # define the input and output types for the function
     pqcrystals_kyber512_ref_keypair = kyber512_ref.pqcrystals_kyber512_ref_keypair
-    pqcrystals_kyber512_ref_keypair.argtypes = [POINTER(c_ubyte), POINTER(c_ubyte)]
+    pqcrystals_kyber512_ref_keypair.argtypes = [POINTER(c_uint8), POINTER(c_uint8)]
     pqcrystals_kyber512_ref_keypair.restype = c_int
 
     # allocate memory for the input and output buffers
@@ -34,8 +34,8 @@ def kyber512_ref_keypair() -> tuple[list, list]:
     sk = create_string_buffer(1632)
 
     # pass pointers to unsigned bytes to the function
-    pk_ptr = cast(pk, POINTER(c_ubyte))
-    sk_ptr = cast(sk, POINTER(c_ubyte))
+    pk_ptr = cast(pk, POINTER(c_uint8))
+    sk_ptr = cast(sk, POINTER(c_uint8))
     res = pqcrystals_kyber512_ref_keypair(pk_ptr, sk_ptr)
 
     # pk and sk now contain the public and private keys, respectively
@@ -57,7 +57,7 @@ def kyber512_ref_keypair() -> tuple[list, list]:
     return pk_list, sk_list, pk, sk, pk_ptr, sk_ptr
 
 
-def kyber512_ref_enc(pk_ptr:POINTER(c_ubyte)):
+def kyber512_ref_enc(pk_ptr:POINTER(c_uint8)):
     """
     * Name:        crypto_kem_enc
     *
@@ -79,15 +79,15 @@ def kyber512_ref_enc(pk_ptr:POINTER(c_ubyte)):
     * CRYPTO_BYTES           = 32
     """
     pqcrystals_kyber512_ref_enc = kyber512_ref.pqcrystals_kyber512_ref_enc
-    pqcrystals_kyber512_ref_enc.argtypes = [POINTER(c_ubyte), POINTER(c_ubyte), POINTER(c_ubyte)]
+    pqcrystals_kyber512_ref_enc.argtypes = [POINTER(c_uint8), POINTER(c_uint8), POINTER(c_uint8)]
     pqcrystals_kyber512_ref_enc.restype = c_int
     
     ct = create_string_buffer(768)
     ss = create_string_buffer(32)   #key_b
     
     # pass pointers to unsigned bytes to the function
-    ct_ptr = cast(ct, POINTER(c_ubyte))
-    ss_ptr = cast(ss, POINTER(c_ubyte))
+    ct_ptr = cast(ct, POINTER(c_uint8))
+    ss_ptr = cast(ss, POINTER(c_uint8))
     res = pqcrystals_kyber512_ref_enc(ct_ptr, ss_ptr, pk_ptr)
     
     ct_list = [int.from_bytes(ct[i:i+1], byteorder='little') for i in range(len(ct))]
@@ -98,7 +98,7 @@ def kyber512_ref_enc(pk_ptr:POINTER(c_ubyte)):
     return ct_list, ss_list, ct, ss, ct_ptr, ss_ptr
 
 
-def kyber512_ref_dec(ct_ptr:POINTER(c_ubyte), sk_ptr:POINTER(c_ubyte)):
+def kyber512_ref_dec(ct_ptr:POINTER(c_uint8), sk_ptr:POINTER(c_uint8)):
     """
     * Name:        crypto_kem_dec
     *
@@ -122,11 +122,11 @@ def kyber512_ref_dec(ct_ptr:POINTER(c_ubyte), sk_ptr:POINTER(c_ubyte)):
     * CRYPTO_BYTES           = 32
     """
     pqcrystals_kyber512_ref_dec = kyber512_ref.pqcrystals_kyber512_ref_dec
-    pqcrystals_kyber512_ref_dec.argtypes = [POINTER(c_ubyte), POINTER(c_ubyte), POINTER(c_ubyte)]
+    pqcrystals_kyber512_ref_dec.argtypes = [POINTER(c_uint8), POINTER(c_uint8), POINTER(c_uint8)]
     pqcrystals_kyber512_ref_dec.restype = c_int
     
     ss = create_string_buffer(32)   #key_a
-    ss_ptr = cast(ss, POINTER(c_ubyte))
+    ss_ptr = cast(ss, POINTER(c_uint8))
     res = pqcrystals_kyber512_ref_dec(ss_ptr, ct_ptr, sk_ptr)
     ss_list = [int.from_bytes(ss[i:i+1], byteorder='little') for i in range(len(ss))]
     return ss_list, ss, ss_ptr
@@ -151,3 +151,9 @@ def test_keys() -> bool:
         return True
     else: 
         return False
+
+# for i in range(5000):
+#     x = test_keys()
+#     if not x:
+#         print(x)
+# print('done')
