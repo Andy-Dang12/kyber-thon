@@ -1,7 +1,8 @@
+import os.path
 from ctypes import (
     cdll, POINTER, Structure, c_size_t, 
-    c_size_t, c_uint8, c_uint32, c_uint64)
-import os.path
+    c_size_t, c_uint8, c_uint32, c_uint64
+)
 
 """
 * more detail, see 
