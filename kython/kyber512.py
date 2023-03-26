@@ -133,6 +133,8 @@ def kyber512_ref_dec(ct_ptr:POINTER(c_uint8), sk_ptr:POINTER(c_uint8)):
 
 
 def compare_list(first:list, second:list) -> bool:
+    print(first)
+    print(second)
     if len(first) != len(second):
         print(f"key_a = {len(first)} ; key_b = {len(second)}")
         return False
@@ -145,15 +147,14 @@ def compare_list(first:list, second:list) -> bool:
 def test_keys() -> bool:
     pk_list, sk_list, pk, sk, pk_ptr, sk_ptr = kyber512_ref_keypair()
     ct_list, key_b, ct, ss, ct_ptr, ss_ptr = kyber512_ref_enc(pk_ptr)
+    
     key_a, ss, ss_ptr = kyber512_ref_dec(ct_ptr, sk_ptr)
     
-    if compare_list(key_a, key_b):
-        return True
-    else: 
-        return False
+    return compare_list(key_a, key_b)
 
-# for i in range(5000):
-#     x = test_keys()
-#     if not x:
-#         print(x)
-# print('done')
+
+for i in range(2):
+    x = test_keys()
+    if not x:
+        print(x)
+print('done')
