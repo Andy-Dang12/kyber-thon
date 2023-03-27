@@ -37,6 +37,6 @@ def pqc_kyber512_ref_dec(ct:List[int], sk:List[int]) -> List[int]:
     res = pqcrystals_kyber512_ref_dec(
         cast(ss, POINTER(c_uint8)), 
         cast(create_string_buffer(bytes(ct), len(ct)), POINTER(c_uint8)),
-        cast(create_string_buffer(bytes(ss), len(ss)), POINTER(c_uint8))
+        cast(create_string_buffer(bytes(sk), len(sk)), POINTER(c_uint8))
     )
     return [int.from_bytes(ss[i:i+1], byteorder='little') for i in range(len(ss))]
