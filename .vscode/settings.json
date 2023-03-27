@@ -5,6 +5,7 @@
         "cstdlib": "c",
         "array": "c",
         "fips202.h": "c",
-        "aes256ctr.h": "c"
+        "aes256ctr.h": "c",
+        "polyvec.h": "c"
     }
 }
