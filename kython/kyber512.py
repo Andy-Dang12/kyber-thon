@@ -1,6 +1,15 @@
 from ctypes import cdll, cast, create_string_buffer
 from ctypes import c_int, c_ubyte, c_uint8, POINTER
 import numpy as np
+from ctypes import c_char
+from typing import List
+
+
+def strBuffer_to_list(strBuff:'c_char*int'):
+    return [int.from_bytes(d, byteorder='little') for d in strBuff]
+
+def list_to_strBuffer(xs:List[c_uint8]) -> 'c_char*int':
+    return create_string_buffer(bytes(xs), len(xs))
 
 # load the shared library containing the C function
 kyber512_ref = cdll.LoadLibrary('ref/libpqcrystals_kyber512_ref.so')
@@ -83,8 +92,10 @@ def kyber512_ref_enc(pk_ptr:POINTER(c_uint8)):
     pqcrystals_kyber512_ref_enc.restype = c_int
     
     ct = create_string_buffer(768)
-    ss = create_string_buffer(32)   #key_b
-    
+    # ss = create_string_buffer(32)   #key_b
+    ss = [72, 101, 108, 108, 111] * 6 + [2, 1]
+    print('raw_ss1 = ', ss)
+    ss = list_to_strBuffer(ss)
     # pass pointers to unsigned bytes to the function
     ct_ptr = cast(ct, POINTER(c_uint8))
     ss_ptr = cast(ss, POINTER(c_uint8))
@@ -92,7 +103,7 @@ def kyber512_ref_enc(pk_ptr:POINTER(c_uint8)):
     
     ct_list = [int.from_bytes(ct[i:i+1], byteorder='little') for i in range(len(ct))]
     ss_list = [int.from_bytes(ss[i:i+1], byteorder='little') for i in range(len(ss))]
-    
+    print('raw_ss2 = ', ss_list)
     ct_array = np.frombuffer(ct, dtype="uint8")
     ss_array = np.frombuffer(ss, dtype="uint8")
     return ct_list, ss_list, ct, ss, ct_ptr, ss_ptr
@@ -133,8 +144,6 @@ def kyber512_ref_dec(ct_ptr:POINTER(c_uint8), sk_ptr:POINTER(c_uint8)):
 
 
 def compare_list(first:list, second:list) -> bool:
-    print(first)
-    print(second)
     if len(first) != len(second):
         print(f"key_a = {len(first)} ; key_b = {len(second)}")
         return False
@@ -149,11 +158,16 @@ def test_keys() -> bool:
     ct_list, key_b, ct, ss, ct_ptr, ss_ptr = kyber512_ref_enc(pk_ptr)
     
     key_a, ss, ss_ptr = kyber512_ref_dec(ct_ptr, sk_ptr)
+    # print('py_pk = ', pk_list)
+    # print('py_sk = ', sk_list)
+    # print('py_ss = ', ss.raw)
+    print('py_keyA = ', key_a)
+    print('py_keyB = ', key_b)
     
     return compare_list(key_a, key_b)
 
 
-for i in range(2):
+for i in range(1):
     x = test_keys()
     if not x:
         print(x)
