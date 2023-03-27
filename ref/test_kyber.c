@@ -14,15 +14,56 @@ static int test_keys()
   uint8_t key_a[CRYPTO_BYTES];
   uint8_t key_b[CRYPTO_BYTES];
 
+    {   printf("### init ###\n");
+        printf("key_a = ");
+        for(int i = 0; i < CRYPTO_BYTES; i++){
+            printf("%d, ", key_a[i]);
+        }   printf("\n");
+
+        printf("key_b = ");
+        for(int i = 0; i < CRYPTO_BYTES; i++){
+            printf("%d, ", key_b[i]);
+        }   printf("\n\n\n\n");
+    }
   //Alice generates a public key
   crypto_kem_keypair(pk, sk);
+    {   printf("### keypair ###\n");
+        printf("key_a = ");
+        for(int i = 0; i < CRYPTO_BYTES; i++){
+            printf("%d, ", key_a[i]);
+        }   printf("\n");
 
+        printf("key_b = ");
+        for(int i = 0; i < CRYPTO_BYTES; i++){
+            printf("%d, ", key_b[i]);
+        }   printf("\n\n\n\n");
+    }
   //Bob derives a secret key and creates a response
   crypto_kem_enc(ct, key_b, pk);
+    {   printf("### encode ###\n");
+        printf("key_a = ");
+        for(int i = 0; i < CRYPTO_BYTES; i++){
+            printf("%d, ", key_a[i]);
+        }   printf("\n");
 
+        printf("key_b = ");
+        for(int i = 0; i < CRYPTO_BYTES; i++){
+            printf("%d, ", key_b[i]);
+        }   printf("\n\n\n\n");
+    }
   //Alice uses Bobs response to get her shared key
   crypto_kem_dec(key_a, ct, sk);
+    {   printf("### decode ###\n");
+        printf("key_a = ");
+        for(int i = 0; i < CRYPTO_BYTES; i++){
+            printf("%d, ", key_a[i]);
+        }   printf("\n");
 
+        printf("key_b = ");
+        for(int i = 0; i < CRYPTO_BYTES; i++){
+            printf("%d, ", key_b[i]);
+        }   printf("\n\n\n\n");
+    }
   if(memcmp(key_a, key_b, CRYPTO_BYTES)) {
     printf("ERROR keys\n");
     return 1;
