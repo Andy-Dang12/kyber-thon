@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "*.pyx": "cython",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "cstdlib": "c",
+        "array": "c",
+        "fips202.h": "c",
+        "aes256ctr.h": "c"
     }
 }
