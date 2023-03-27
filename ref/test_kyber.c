@@ -6,6 +6,23 @@
 
 #define NTESTS 1
 
+static inline void show_keya_keyb(
+    const char* text, 
+    const uint8_t key_a[CRYPTO_BYTES],
+    const uint8_t key_b[CRYPTO_BYTES]
+){
+    printf("### %s ###\n", text);
+    printf("key_a = ");
+    for(int i = 0; i < CRYPTO_BYTES; i++){
+        printf("%d, ", key_a[i]);
+    }   printf("\n");
+
+    printf("key_b = ");
+    for(int i = 0; i < CRYPTO_BYTES; i++){
+        printf("%d, ", key_b[i]);
+    }   printf("\n\n\n\n");
+}
+
 static int test_keys()
 {
   uint8_t pk[CRYPTO_PUBLICKEYBYTES];
@@ -14,56 +31,20 @@ static int test_keys()
   uint8_t key_a[CRYPTO_BYTES];
   uint8_t key_b[CRYPTO_BYTES];
 
-    {   printf("### init ###\n");
-        printf("key_a = ");
-        for(int i = 0; i < CRYPTO_BYTES; i++){
-            printf("%d, ", key_a[i]);
-        }   printf("\n");
-
-        printf("key_b = ");
-        for(int i = 0; i < CRYPTO_BYTES; i++){
-            printf("%d, ", key_b[i]);
-        }   printf("\n\n\n\n");
-    }
+  show_keya_keyb("init", key_a, key_b);
   //Alice generates a public key
   crypto_kem_keypair(pk, sk);
-    {   printf("### keypair ###\n");
-        printf("key_a = ");
-        for(int i = 0; i < CRYPTO_BYTES; i++){
-            printf("%d, ", key_a[i]);
-        }   printf("\n");
-
-        printf("key_b = ");
-        for(int i = 0; i < CRYPTO_BYTES; i++){
-            printf("%d, ", key_b[i]);
-        }   printf("\n\n\n\n");
-    }
+  show_keya_keyb("keypair", key_a, key_b);
   //Bob derives a secret key and creates a response
   crypto_kem_enc(ct, key_b, pk);
-    {   printf("### encode ###\n");
-        printf("key_a = ");
-        for(int i = 0; i < CRYPTO_BYTES; i++){
-            printf("%d, ", key_a[i]);
-        }   printf("\n");
 
-        printf("key_b = ");
-        for(int i = 0; i < CRYPTO_BYTES; i++){
-            printf("%d, ", key_b[i]);
-        }   printf("\n\n\n\n");
-    }
+  show_keya_keyb("encode", key_a, key_b);
+
   //Alice uses Bobs response to get her shared key
   crypto_kem_dec(key_a, ct, sk);
-    {   printf("### decode ###\n");
-        printf("key_a = ");
-        for(int i = 0; i < CRYPTO_BYTES; i++){
-            printf("%d, ", key_a[i]);
-        }   printf("\n");
 
-        printf("key_b = ");
-        for(int i = 0; i < CRYPTO_BYTES; i++){
-            printf("%d, ", key_b[i]);
-        }   printf("\n\n\n\n");
-    }
+  show_keya_keyb("decode", key_a, key_b);
+  
   if(memcmp(key_a, key_b, CRYPTO_BYTES)) {
     printf("ERROR keys\n");
     return 1;
